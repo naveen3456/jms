@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9777597f-6fe0-4bf8-80df-a38d047d3594" basePath="message" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="67b7fd28-7d1a-48c2-8ded-64da451eb86c" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<jms:config name="JMS_Config1" doc:name="JMS Config" doc:id="ae071e02-0d80-4c78-b670-92d98de4fdcd" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="mule_to_jms_Flow" doc:id="62fc4fb1-12be-44f4-876c-79ade647843e" >
+		<http:listener doc:name="Listener" doc:id="3647ea45-4653-4a80-81e1-8857fcf51767" config-ref="HTTP_Listener_config" path="jms"/>
+		<logger level="INFO" doc:name="Logger" doc:id="311b5751-c5fc-4c35-9cff-263da239e491" message="message has been recevied" />
+		<logger level="INFO" doc:name="Logger" doc:id="445a9884-98df-476b-a80a-fa0789347041" message="#[payload]"/>
+		<jms:publish doc:name="Publish" doc:id="7e51c71a-55ef-46e8-ba2e-63cf96271b0b" config-ref="JMS_Config" destination="Naveen_Q"/>
+	</flow>
+	<flow name="jms_to_mule_Flow" doc:id="74e0faa9-32d2-4b01-877d-8526d0abc7a5" >
+		<jms:listener doc:name="On New Message" doc:id="422b7da7-5ecb-4c93-b0fe-da1f4c337574" config-ref="JMS_Config1" destination="Naveen_Q"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2cf68b53-f251-4ddc-af04-c22d3c64fff6" message="#[payload]"/>
+	</flow>
+</mule>
